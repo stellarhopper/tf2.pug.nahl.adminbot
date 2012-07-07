@@ -11,6 +11,15 @@ import time
 
 #irclib.DEBUG = 1
 
+def extractUserName(user):
+	if user:
+		return string.split(user, '!')[0]
+	else:
+		return ''
+
+def send(msg):
+	server.send_raw("PRIVMSG " + config.channel + ' :\x030,01' + msg)
+
 def welcome(connection, event):
 	server.send_raw("as auth " + config.gamesurge_user + " " + config.gamesurge_pass)
 	server.send_raw("MODE " + nick + " +x")
@@ -23,7 +32,9 @@ def nickchange(connection, event):
 	print 'I see a nickchange'
 
 def pubmsg(connection, event):
+	userName = extractUserName(event.source())
 	print 'I see a message'
+	send('I see your msg, ' + userName)
 
 def checkConnection():
 	global connectTimer
@@ -68,9 +79,9 @@ irc.add_global_handler('welcome', welcome)
 
 # Jump into an infinite loop
 while not restart:
-    irc.process_once(0.2)
-    if time.time() - minuteTimer > 60:
-        minuteTimer = time.time()
-        checkConnection()
+	irc.process_once(0.2)
+	if time.time() - minuteTimer > 60:
+		minuteTimer = time.time()
+		checkConnection()
 
 connectTimer.cancel()
