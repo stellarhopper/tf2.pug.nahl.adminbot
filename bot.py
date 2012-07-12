@@ -17,6 +17,9 @@ def extractUserName(user):
 	else:
 		return ''
 
+def cleanUserCommand(command):
+	return re.escape(command)
+
 def send(msg):
 	server.send_raw("PRIVMSG " + config.channel + ' :\x030,01' + msg)
 
@@ -33,8 +36,11 @@ def nickchange(connection, event):
 
 def pubmsg(connection, event):
 	userName = extractUserName(event.source())
-	print 'I see a message'
-	send('I see your msg, ' + userName)
+	userCommand = event.arguments()[0]
+	escapedChannel = cleanUserCommand(channel).replace('\\.', '\\\\.')
+	escapedUserCommand = cleanUserCommand(event.arguments()[0])
+	send('I see your msg, ' + userName + ': ' + userCommand)
+	send('Channel: ' + escapedChannel)
 
 def checkConnection():
 	global connectTimer
